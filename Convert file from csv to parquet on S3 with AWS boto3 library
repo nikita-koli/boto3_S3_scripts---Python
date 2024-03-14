@@ -1,0 +1,36 @@
+#WRITE FILE IN PARQUET
+
+import boto3
+import pandas as pd
+import pyarrow.parquet as pp
+import pyarrow as pa
+from io import BytesIO
+def lambda_handler(event, context):
+    # Initialize a session using Amazon S3.
+    s3 = boto3.client('s3')
+    
+    # Specify the bucket name and file name you want to read and write.
+    source_bucket = 'your_bucket_name'
+    source_file = 'your_object_key'
+    destination_bucket = 'your_destination_bucket'
+    destination_file = 'your_destination_bucket'
+    
+    # Use the `get_object` method to retrieve the file.
+    response = s3.get_object(Bucket=source_bucket, Key=source_file)
+    
+    # Read the file contents from the response.
+    file_contents = response['Body'].read()
+    
+    
+    # Convert CSV to DataFrame
+    df = pd.read_csv(BytesIO(file_contents))
+    
+    # Convert DataFrame to Parquet
+    parquet_buffer = BytesIO()
+    pp.write_table(pa.Table.from_pandas(df), parquet_buffer)
+    
+    # Upload Parquet to S3
+    s3.put_object(Bucket=destination_bucket, Key=destination_file, Body=parquet_buffer.getvalue())
+    
+    print(event)
+    print(context)
