@@ -1,0 +1,36 @@
+# READ DATA FROM S3
+
+
+import boto3
+
+def lambda_handler(event, context):
+    # Replace 'your_bucket_name' and 'your_object_key' with your actual S3 bucket name and object key
+    bucket_name = 'your_bucket_name'
+    object_key = 'your_object_key'
+
+    # Create an S3 client
+    s3 = boto3.client('s3')
+
+    try:
+        # Get the object from the S3 bucket
+        response = s3.get_object(Bucket=bucket_name, Key=object_key)
+
+        # Read the content of the object
+        content = response['Body'].read().decode('utf-8')
+
+        # Do something with the content (e.g., process or log it)
+        print(content)
+
+        # Return a success message or result if needed
+        return {
+            'statusCode': 200,
+            'body': 'Successfully read data from S3.'
+        }
+
+    except Exception as e:
+        # Handle any exceptions that may occur
+        print("Error reading data from S3")
+        return {
+            'statusCode': 500,
+            'body': 'Error reading data from S3.'
+        }
